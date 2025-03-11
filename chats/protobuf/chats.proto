@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+message Chat {
+  string chatId = 1;
+  repeated string participants = 2;
+}
+
+message User { string username = 1; }
+
+message Message {
+  string chatId = 1;
+  string senderId = 2;
+  string text = 3;
+  google.protobuf.Timestamp time = 4;
+}
+
+message MultipleUsers {
+  string firstUserId = 1;
+  string secondUserId = 2;
+}
+
+service Chats {
+  rpc GetChats(User) returns (stream Chat);
+  rpc CreateChat(MultipleUsers) returns (Chat);
+  rpc GetMessages(Chat) returns (stream Message);
+}
