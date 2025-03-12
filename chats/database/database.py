@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 from beanie import init_beanie, Document
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from models.chats import Chat
+from chats.models.chats import Chat
+from chats.models.message import Message
 
 
 load_dotenv()
@@ -23,5 +24,4 @@ async def init():
 
     print(await client.list_database_names())
 
-    await init_beanie(database=db, document_models=[Chat])
-    return "OK"
+    await init_beanie(database=db, document_models=[Chat, Message])

@@ -4,9 +4,9 @@ from beanie import Document
 
 class Message(Document):
     chatId: str
-    senderId: str
+    senderUsername: str
     text: str
-    time: datetime.timedelta
+    time: datetime.datetime
 
     class Settings:
         name = "messages"
