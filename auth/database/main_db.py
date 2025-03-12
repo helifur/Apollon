@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from beanie import init_beanie, Document
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from ..models.user import User
+from models.user import User
 
 
 load_dotenv()

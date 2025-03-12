@@ -1,33 +1,31 @@
 import datetime
+import logging
 import os
 import jwt
+import grpc
+import asyncio
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from passlib.context import CryptContext
 from dotenv import load_dotenv
 
-from auth.models.user import User
-from auth.database.main_db import init
-from auth.database.redis_db import init_redis
+from models.user import User
+from database.main_db import init
+from database.redis_db import init_redis
+from protobuf import auth_pb2, auth_pb2_grpc
 
 
 load_dotenv()
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    await init()
-    yield
-
-
-app = FastAPI(lifespan=lifespan)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 redis_client = init_redis()
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALG = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 3
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
 REFRESH_TOKEN_EXPIRE_DAYS = 7
 
 
@@ -68,7 +66,7 @@ async def authenticate_user(username: str, password: str):
     return True
 
 
-def create_token(data: dict, expires: datetime.timedelta):
+async def create_token(data: dict, expires: datetime.timedelta):
     to_encode = data.copy()
     exp = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(
         seconds=expires.total_seconds()
@@ -85,7 +83,7 @@ def cache_refresh_token(token: str, username: str):
     )
 
 
-@app.post("/register")
+"""@app.post("/register")
 async def reg_user(request: SignupRequest):
     name = request.name
     username = request.username
@@ -129,7 +127,43 @@ async def auth_user(request: AuthRequest):
     cache_refresh_token(refresh_token, username)  # redis cache
 
     response = JSONResponse(content={"status": status.HTTP_200_OK})
-    response.set_cookie(key="access_token", value=access_token, httponly=True)
-    response.set_cookie(key="refresh_token", value=refresh_token, httponly=True)
+    response.set_cookie(key="access_token", value=access_token)
 
-    return response
+    return response"""
+
+
+class AuthServicer(auth_pb2_grpc.AuthServicer):
+    async def GetToken(self, request, context):
+        username = request.username
+        password = request.password
+
+        if not await authenticate_user(username, password):
+            return auth_pb2.AuthData(token=None)
+
+        access_token = await create_token(
+            {"username": username},
+            datetime.timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+        )
+        refresh_token = await create_token(
+            {"username": username}, datetime.timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+        )
+
+        cache_refresh_token(refresh_token, username)  # redis cache
+
+        return auth_pb2.AuthData(token=access_token)
+
+
+async def serve():
+    await init()
+    server = grpc.aio.server()
+
+    auth_pb2_grpc.add_AuthServicer_to_server(AuthServicer(), server)
+    server.add_insecure_port("[::]:50052")
+    print("Server started at port 50052!")
+    await server.start()
+    await server.wait_for_termination()
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.ERROR)
+    asyncio.get_event_loop().run_until_complete(serve())
