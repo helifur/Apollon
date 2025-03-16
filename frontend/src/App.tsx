@@ -20,7 +20,7 @@ export const AuthContext = createContext("");
 
 
 function App() {
-  const [curUser, setCurUser] = useState(false);
+  const [curToken, setCurToken] = useState(false);
   const [curChat, setCurChat] = useState("");
   const [chat, setChat] = useState(-1);
   const ProfilesContext = createContext({
@@ -43,7 +43,7 @@ function App() {
   }
   useEffect(() => {
     fetchProfiles()
-  }, [curUser])
+  }, [curToken])
 
 
   function trigger(data) {
@@ -53,27 +53,32 @@ function App() {
 
   return (
     <ChakraProvider value={defaultSystem}>
-      <AuthContext.Provider value={{ curUser, setCurUser }}>
+      <AuthContext.Provider value={{ curToken, setCurToken }}>
 
         <Flex
           minWidth="100vh"
-          minHeight="100vh"
+          height="100vh"
+          overflow="hidden"
           direction="column">
           <Header />
 
-          <Flex flexGrow={1} p={2}>
-            <Flex flexGrow={1} borderWidth="2px" direction="column" overflowY="auto" scrollbar="hidden">
-              <ProfilesContext.Provider value={{ profiles, fetchProfiles }}>
-                {profiles.map((profile: Companion) => (
-                  <Profile onclck={trigger} profile={profile} />
-                ))}
+          <Grid height="100%" templateColumns="repeat(2, 1fr)" templateRows="100%" overflow="auto" p={2}>
+            <GridItem>
+              <Flex height="100%" flexGrow={1} borderWidth="2px" direction="column" overflowY="auto" scrollbar="hidden">
+                <ProfilesContext.Provider value={{ profiles, fetchProfiles }}>
+                  {profiles.map((profile: Companion) => (
+                    <Profile onclck={trigger} profile={profile} />
+                  ))}
 
-              </ProfilesContext.Provider>
+                </ProfilesContext.Provider>
 
-            </Flex>
+              </Flex>
+            </GridItem>
 
-            <Chat curChat={curChat} />
-          </Flex>
+            <GridItem>
+              <Chat curChat={curChat} />
+            </GridItem>
+          </Grid>
         </Flex>
       </AuthContext.Provider>
     </ChakraProvider>

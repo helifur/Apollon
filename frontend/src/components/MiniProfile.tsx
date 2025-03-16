@@ -4,11 +4,11 @@ import { AuthContext } from "../App";
 
 
 export default function MiniProfile() {
-  const { curUser, setCurUser } = useContext(AuthContext);
+  const { curToken, setCurToken } = useContext(AuthContext);
 
   function handleLogout() {
     document.cookie = "access_token=; Max-Age=-1;";
-    setCurUser("");
+    setCurToken("");
   }
 
   return (

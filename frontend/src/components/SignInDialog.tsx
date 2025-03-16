@@ -33,7 +33,7 @@ export default function SignInDialog() {
   const [invalidUsernameAuth, setInvalidUsernameAuth] = useState(false);
   const [invalidPasswordAuth, setInvalidPasswordAuth] = useState(false);
 
-  const { curUser, setCurUser } = useContext(AuthContext);
+  const { curToken, setCurToken } = useContext(AuthContext);
 
 
   const handleTab = async (e) => {
@@ -94,7 +94,7 @@ export default function SignInDialog() {
       const response = request.json();
       const data = response.then((value) => {
         if (value.status == 200) {
-          setCurUser(Cookies.get("access_token"));
+          setCurToken(Cookies.get("access_token"));
           console.log(Cookies.get("access_token"));
         }
       });

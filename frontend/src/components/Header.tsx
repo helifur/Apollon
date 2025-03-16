@@ -20,11 +20,11 @@ import Cookies from "js-cookie";
 
 
 export default function Header() {
-  const { curUser, setCurUser } = useContext(AuthContext);
+  const { curToken, setCurToken } = useContext(AuthContext);
 
 
-  if (curUser == false && document.cookie.indexOf("access_token") != -1) {
-    setCurUser(Cookies.get("access_token"));
+  if (curToken == false && document.cookie.indexOf("access_token") != -1) {
+    setCurToken(Cookies.get("access_token"));
   }
 
 
@@ -41,10 +41,9 @@ export default function Header() {
       top="0"
       left="0"
       right="0"
-      zIndex="1000"
     >
       <Heading as="h1" size="sm">Test</Heading>
-      {(curUser != "") ? <MiniProfile /> : <SignInDialog />}
+      {(curToken != "") ? <MiniProfile /> : <SignInDialog />}
     </Flex >
   );
 };
