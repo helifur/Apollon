@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nauth.proto\"\x19\n\x08\x41uthData\x12\r\n\x05token\x18\x01 \x01(\t\"5\n\x0fUserCredentials\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t2/\n\x04\x41uth\x12\'\n\x08GetToken\x12\x10.UserCredentials\x1a\t.AuthDatab\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\nauth.proto\"l\n\x08\x41uthData\x12\x12\n\x05\x65rror\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x14\n\x0c\x61\x63\x63\x65ss_token\x18\x02 \x01(\t\x12\x1a\n\rrefresh_token\x18\x03 \x01(\tH\x01\x88\x01\x01\x42\x08\n\x06_errorB\x10\n\x0e_refresh_token\"5\n\x0fUserCredentials\x12\x10\n\x08username\x18\x01 \x01(\t\x12\x10\n\x08password\x18\x02 \x01(\t2Y\n\x04\x41uth\x12\'\n\x08GetToken\x12\x10.UserCredentials\x1a\t.AuthData\x12(\n\x10\x41uthenticateUser\x12\t.AuthData\x1a\t.AuthDatab\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,9 +32,9 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'auth_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
   _globals['_AUTHDATA']._serialized_start=14
-  _globals['_AUTHDATA']._serialized_end=39
-  _globals['_USERCREDENTIALS']._serialized_start=41
-  _globals['_USERCREDENTIALS']._serialized_end=94
-  _globals['_AUTH']._serialized_start=96
-  _globals['_AUTH']._serialized_end=143
+  _globals['_AUTHDATA']._serialized_end=122
+  _globals['_USERCREDENTIALS']._serialized_start=124
+  _globals['_USERCREDENTIALS']._serialized_end=177
+  _globals['_AUTH']._serialized_start=179
+  _globals['_AUTH']._serialized_end=268
 # @@protoc_insertion_point(module_scope)

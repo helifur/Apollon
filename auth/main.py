@@ -54,7 +54,7 @@ def verify_password(password, hashed_password):
     return pwd_context.verify(password, hashed_password)
 
 
-async def authenticate_user(username: str, password: str):
+async def verify_user(username: str, password: str):
     user = await get_user(username)
 
     if not user:
@@ -137,7 +137,7 @@ class AuthServicer(auth_pb2_grpc.AuthServicer):
         username = request.username
         password = request.password
 
-        if not await authenticate_user(username, password):
+        if not await verify_user(username, password):
             return auth_pb2.AuthData(token=None)
 
         access_token = await create_token(
@@ -150,7 +150,10 @@ class AuthServicer(auth_pb2_grpc.AuthServicer):
 
         cache_refresh_token(refresh_token, username)  # redis cache
 
-        return auth_pb2.AuthData(token=access_token)
+        return auth_pb2.AuthData(access_token=access_token)
+
+    async def AuthenticateUser(self, request, content):
+        pass
 
 
 async def serve():

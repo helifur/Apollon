@@ -44,6 +44,12 @@ class AuthStub(object):
             response_deserializer=auth__pb2.AuthData.FromString,
             _registered_method=True,
         )
+        self.AuthenticateUser = channel.unary_unary(
+            "/Auth/AuthenticateUser",
+            request_serializer=auth__pb2.AuthData.SerializeToString,
+            response_deserializer=auth__pb2.AuthData.FromString,
+            _registered_method=True,
+        )
 
 
 class AuthServicer(object):
@@ -55,12 +61,23 @@ class AuthServicer(object):
         context.set_details("Method not implemented!")
         raise NotImplementedError("Method not implemented!")
 
+    def AuthenticateUser(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
 
 def add_AuthServicer_to_server(servicer, server):
     rpc_method_handlers = {
         "GetToken": grpc.unary_unary_rpc_method_handler(
             servicer.GetToken,
             request_deserializer=auth__pb2.UserCredentials.FromString,
+            response_serializer=auth__pb2.AuthData.SerializeToString,
+        ),
+        "AuthenticateUser": grpc.unary_unary_rpc_method_handler(
+            servicer.AuthenticateUser,
+            request_deserializer=auth__pb2.AuthData.FromString,
             response_serializer=auth__pb2.AuthData.SerializeToString,
         ),
     }
@@ -91,6 +108,36 @@ class Auth(object):
             target,
             "/Auth/GetToken",
             auth__pb2.UserCredentials.SerializeToString,
+            auth__pb2.AuthData.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True,
+        )
+
+    @staticmethod
+    def AuthenticateUser(
+        request,
+        target,
+        options=(),
+        channel_credentials=None,
+        call_credentials=None,
+        insecure=False,
+        compression=None,
+        wait_for_ready=None,
+        timeout=None,
+        metadata=None,
+    ):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            "/Auth/AuthenticateUser",
+            auth__pb2.AuthData.SerializeToString,
             auth__pb2.AuthData.FromString,
             options,
             channel_credentials,

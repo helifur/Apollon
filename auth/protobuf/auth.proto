@@ -1,10 +1,17 @@
 syntax = "proto3";
 
-message AuthData { string token = 1; }
+message AuthData {
+  optional string error = 1;
+  string access_token = 2;
+  optional string refresh_token = 3;
+}
 
 message UserCredentials {
   string username = 1;
   string password = 2;
 }
 
-service Auth { rpc GetToken(UserCredentials) returns (AuthData); }
+service Auth {
+  rpc GetToken(UserCredentials) returns (AuthData);
+  rpc AuthenticateUser(AuthData) returns (AuthData);
+}
