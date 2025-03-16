@@ -1,11 +1,10 @@
 [project]
-name = "auth"
+name = "chats"
 version = "0.1.0"
 description = ""
 authors = [
     {name = "viamn",email = "helifur17@proton.me"}
 ]
-readme = "README.md"
 requires-python = ">=3.11,<4.0"
 dependencies = [
     "passlib[bcrypt] (>=1.7.4,<2.0.0)",
@@ -15,7 +14,10 @@ dependencies = [
     "redis[hiredis] (>=5.2.1,<6.0.0)",
     "grpcio (>=1.70.0,<2.0.0)",
     "grpcio-tools (>=1.70.0,<2.0.0)",
-    "websockets (>=15.0.1,<16.0.0)"
+    "websockets (>=10.0)",
+    "python-socketio[asgi] (>=5.12.1,<6.0.0)",
+    "python-engineio (>=4.11.2,<5.0.0)",
+    "uvicorn[standard] (>=0.34.0,<0.35.0)"
 ]
 
 

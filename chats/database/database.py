@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from beanie import init_beanie, Document
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from chats.models.chats import Chat
+from chats.models.chat import Chat
 from chats.models.message import Message
 
 

@@ -2,6 +2,7 @@ import datetime
 import socketio
 import jwt
 import os
+import uvicorn
 from dotenv import load_dotenv
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
@@ -32,37 +33,45 @@ sio = socketio.AsyncServer(
     engineio_logger=True,
 )
 app = FastAPI(lifespan=lifespan)
-socket_app = socketio.ASGIApp(sio)
-
-app.mount("/", socket_app)
+socket_app = socketio.ASGIApp(socketio_server=sio, other_asgi_app=app)
 
 
 @sio.event
-def connect(sid, environ):
-    print("connect ", sid)
+async def connect(sid, environ):
+    for i in range(10):
+        print("connect ", sid)
+
+    await sio.emit("join_room")
 
 
 @sio.event
 def disconnect(sid):
-    print("disconnect ", sid)
+    for i in range(10):
+        print("disconnect ", sid)
 
 
 @sio.event
-async def fetch_messages(sid, data):
-    print(data)
+async def join_room(sid, data):
     chatId = data["chatId"]
+    username = jwt.decode(
+        data["userToken"], key=os.getenv("SECRET_KEY"), algorithms="HS256"
+    )["username"]
+
+    await sio.enter_room(sid, room=chatId)
 
     candidates = await Message.find({"chatId": chatId}).to_list()
     messages = []
 
     for elem in candidates:
         messages.append(
-            {"time": elem.time.strftime("%Y-%m-%d %H:%M:%S"), "text": elem.text}
+            {
+                "time": elem.time.strftime("%Y-%m-%d %H:%M:%S"),
+                "text": elem.text,
+                "amISender": True if elem.senderUsername == username else False,
+            }
         )
 
-    print(messages)
-
-    await sio.emit("fetch_messages", {"status": 200, "data": messages}, to=sid)
+    await sio.emit("update_messages", messages, to=sid)
 
 
 @sio.event
@@ -71,7 +80,7 @@ async def message(sid, data):
         data["access_token"], key=os.getenv("SECRET_KEY"), algorithms="HS256"
     )
 
-    print(username)
+    print("RECEIVED SID:", sid)
     time = datetime.datetime.now()
 
     candidate = Message(
@@ -84,4 +93,19 @@ async def message(sid, data):
     await candidate.insert()
     print("OK")
 
-    return {"text": data["text"], "time": time.strftime("%Y-%m-%d %H:%M:%S")}
+    print(
+        "People in room:",
+    )
+
+    await sio.send(
+        {
+            "text": data["text"],
+            "time": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "sender": True,
+        },
+        room=data["chatId"],
+    )
+
+
+if __name__ == "__main__":
+    uvicorn.run(socket_app)

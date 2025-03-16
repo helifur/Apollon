@@ -1,3 +1,4 @@
+import os
 import grpc
 import logging
 import asyncio
@@ -7,8 +8,9 @@ import protobuf.chats_pb2 as chats_pb2
 import protobuf.chats_pb2_grpc as chats_pb2_grpc
 
 from database.database import init
-from models.chats import Chat
-from models.message import Message
+
+from chats.models.chat import Chat
+from chats.models.message import Message
 from beanie.operators import In
 
 
