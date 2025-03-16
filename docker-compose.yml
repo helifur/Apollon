@@ -1,0 +1,65 @@
+
+version: '3'
+
+services:
+  #  application:
+  #        build: 
+  #            dockerfile: ./Dockerfile
+  #
+  #        ports:
+  #          - 7000:15555
+  #
+  #        depends_on:
+  #          - mongo-db
+  #        
+  #        env_file:
+  #            - "./.env"
+  #        networks:
+  #            - mongo-compose-network
+  #
+  mongo-express:
+    image: mongo-express
+    ports:
+      - 8081:8081
+    env_file:
+      - .env
+    links:
+      - mongo-db
+    networks:
+      - mongo-compose-network
+    restart: no
+    depends_on:
+      - mongo-db
+
+  mongo-db:
+    image: mongo:latest
+    container_name: mongo
+    restart: no
+    env_file:
+      - .env
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data_container:/data/db
+    networks:
+      - mongo-compose-network
+
+  redis:
+    image: redis:latest
+    env_file:
+      - .env
+    ports:
+      - "6380:6379"
+    volumes:
+      - redisdata:/data
+    networks:
+      - mongo-compose-network
+
+
+networks:
+    mongo-compose-network:
+      driver: bridge
+
+volumes:
+  mongodb_data_container:
+  redisdata:

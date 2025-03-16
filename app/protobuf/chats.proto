@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+message Chat {
+  string chatId = 1;
+  repeated string participants = 2;
+}
+
+message User { string username = 1; }
+
+message MultipleUsers {
+  string firstUserId = 1;
+  string secondUserId = 2;
+}
+
+service Chats {
+  rpc GetChats(User) returns (stream Chat);
+  rpc CreateChat(MultipleUsers) returns (Chat);
+}
